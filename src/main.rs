@@ -1,5 +1,6 @@
 use plotters::prelude::*;
-use rand::{thread_rng, Rng};
+use rand::{distributions, thread_rng, Rng};
+use rand_distr::{Normal, Distribution};
 use std::f32::consts::PI;
 
 #[derive(Debug, Clone)]
@@ -19,17 +20,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let image_height = 1080;
 
     let mut rng = thread_rng();
-    let mut point_cloud: Vec<_> = (0..500)
-        .map(|_| Vector2 {
-            x: rng.gen(),
-            y: rng.gen(),
-        })
-        .collect();
+    let normal_dist = Normal::<f32>::new(PI/4f32, ((PI * 2f32)/12f32).powf(2f32)).unwrap();
+    let mut point_cloud = Vec::<Vector2>::new();
 
     let mut laser_scan: Vec<_> = (0..500)
         .map(|_| LaserScan {
-            r: 1.0 + rng.gen_range(-0.05f32..0.05f32),
-            theta: rng.gen_range(0f32..PI/2.0),
+            r: 1.0 + rng.gen_range(-0.01f32..0.01f32),
+            theta: normal_dist.sample(&mut rng),
         })
         .collect();
 
